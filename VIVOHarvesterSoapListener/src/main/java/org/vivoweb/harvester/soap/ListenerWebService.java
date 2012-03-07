@@ -119,7 +119,7 @@ public class ListenerWebService {
 
 				// deploing all needed services
 				myServer.deployRpcSoapService(
-						org.jSoapServer.SoapService.class, "tes11");
+						org.vivoweb.harvester.soap.MyCustomWebService.class, "CustomWebservice");
 
 				// starting the soap server
 				myServer.startServer();
