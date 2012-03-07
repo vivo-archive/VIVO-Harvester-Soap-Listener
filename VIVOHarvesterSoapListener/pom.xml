@@ -278,7 +278,7 @@
 			<version>0.3</version>
 			<type>jar</type>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/jSoapServer-0.3.jar</systemPath>
+			<systemPath>${basedir}/lib/jsoapserver-0.3.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
