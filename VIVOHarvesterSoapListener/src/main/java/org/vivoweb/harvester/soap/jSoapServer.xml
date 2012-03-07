@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!-- http://www.quickserver.org/xml/quickserver_config.xsd -->
+<quickserver>
+    <!-- the name of your server (will be displayed in the http server header) -->
+	<name>SoapServer v 0.2.10</name>
+	
+	<!-- ip address and port the server should listen on 
+		 if you set the bind-address to 0.0.0.0 jSoapServer will bind to all interfaces
+	-->
+	<port>8090</port>
+	<bind-address>0.0.0.0</bind-address>
+	
+	<!-- The jSoapServer class that is responsible for the command handling (please don't change this) -->
+	<client-event-handler>org.jSoapServer.SoapHandler</client-event-handler>
+	<client-binary-handler>org.jSoapServer.SoapHandler</client-binary-handler>	
+	<client-extended-event-handler>org.jSoapServer.SoapHandler</client-extended-event-handler>
+	
+	<!-- the jSoapServer class where the request data is stored (please don't change this) -->
+	<client-data>org.jSoapServer.SoapData</client-data>
+
+	<!-- the data mode that is used by jSoapServer (please don't change this) -->
+	<default-data-mode>
+		<data-type-in>Binary</data-type-in>
+		<data-type-out>Binary</data-type-out>
+	</default-data-mode>
+
+	<!-- if java NIO should be used (please don't change this) -->
+	<server-mode>
+		<blocking>true</blocking>
+	</server-mode>
+	
+	<!-- connection timeout in milliseconds -->
+	<timeout>60000</timeout>
+	<timeout-msg>-ERR Timeout</timeout-msg>
+
+	<!-- some jSoapServer Addons -->
+    <server-hooks>
+    	<!-- <class-name>org.jSoapServer.addon.upnp.UPnPHook</class-name> -->
+    </server-hooks>	
+
+	<init-server-hooks>
+		<class-name>org.jSoapServer.SetupLoggingHook</class-name>
+	</init-server-hooks>
+	
+	<!-- application specific configuration -->
+  	<!-- UPnPHook specific values --> 		
+  	<!--        
+    <application-configuration>
+        <property>
+        	<property-name>UPnP.scantimeout</property-name>
+            <property-value>8000</property-value>
+    	</property>    	
+    </application-configuration>	  
+    -->
+
+	<!-- the maximum amount of concurrent connections -->
+	<max-connection>-1</max-connection>
+	<max-connection-msg>Server Busy. Max Connection Reached</max-connection-msg>
+
+	<console-logging-level>WARNING</console-logging-level>
+	<console-logging-formatter>org.quickserver.util.logging.MiniFormatter</console-logging-formatter>
+	
+	<object-pool>
+		<max-active>-1</max-active>
+		<max-idle>50</max-idle>
+
+		<thread-object-pool>
+			<max-active>200</max-active>
+			<max-idle>50</max-idle>
+		</thread-object-pool>
+
+		<client-handler-object-pool>
+			<max-active>-1</max-active>
+			<max-idle>50</max-idle>
+		</client-handler-object-pool>
+
+		<byte-buffer-object-pool>
+			<max-active>500</max-active>
+			<max-idle>50</max-idle>
+		</byte-buffer-object-pool>
+
+		<client-data-object-pool>
+			<max-active>-1</max-active>
+			<max-idle>50</max-idle>
+		</client-data-object-pool>
+	</object-pool>	
+	
+	<communication-logging>
+		<enable>true</enable>
+	</communication-logging>
+
+	<!-- Config QSAdminServer -->
+	<qsadmin-server>
+		<port>9080</port>
+		<bind-address>127.0.0.1</bind-address>
+
+		<!-- the jSoapServer command pluin -->
+		<!--<command-plugin>org.jSoapServer.QSAdminSoapPlugin</command-plugin>-->
+
+		<command-shell>
+			<enable>true</enable>
+		</command-shell>
+
+		<communication-logging>
+			<enable>false</enable>
+		</communication-logging>
+
+		<access-constraint>
+		  <ip-filter> 
+			<enable>true</enable>
+			<allow-access>true</allow-access>
+			<ip-collection>
+			  <client-ip-address>127.0.0.1</client-ip-address> 
+			</ip-collection>
+		  </ip-filter> 
+		</access-constraint> 
+	</qsadmin-server>
+</quickserver>
