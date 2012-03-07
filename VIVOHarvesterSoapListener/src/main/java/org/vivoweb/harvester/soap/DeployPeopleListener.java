@@ -64,67 +64,21 @@ import org.quickserver.util.xmlreader.QSAdminServerConfig;
 import org.quickserver.util.xmlreader.QuickServerConfig;
 import org.w3c.dom.Document;
 
-/**
- * To integrate jSoapServer into your application you can do the following:<br>
- * 
- * <pre>
- * public class yourClass {
- * 	private SoapServer soapServer = null;
- * 
- * 	// Function to start jSoapServer
- * 	public void startSoapServer(String configFileName) throws Exception {
- * 		// create the server object
- * 		this.soapServer = new SoapServer();
- * 
- * 		// initialize server
- * 		if (!this.soapServer.initService(configFileName))
- * 			throw new Exception(&quot;SOAP server initialization failed&quot;);
- * 
- * 		// deploy service(s)
- * 		this.soapServer.deployRpcSoapService(org.myApp.myServiceClass.class, // service
- * 																				// class
- * 				&quot;myService&quot; // service name to use
- * 		);
- * 
- * 		// startup server
- * 		this.soapServer.startServer();
- * 	}
- * 
- * 	// Function to stop jSoapServer
- * 	public void stopSoapServer() throws Exception {
- * 		this.soapServer.stopServer();
- * 	}
- * }
- * </pre>
- * 
- * @author Martin Thelian
- * @version 0.3
- */
-public class ListenerWebService {
+
+public class DeployPeopleListener {
 
 	public static void main(String args[]) {
 		try {
 			// creating a new soap server
-			SoapServer myServer = new SoapServer();
 		
+			SoapServer myServer = new SoapServer();
 			// configuring the server properties
+		    String confFile =  "jSoapServer.xml";           
 			
-			System.out.println(System.getProperty("user.dir"));
-			String confFile = "/home/mayank/git/VIVO-Harvester-Soap-Listener/VIVOHarvesterSoapListener/src/main/java/org/vivoweb/harvester/soap/jSoapServer.xml";
-			if (myServer.initService(confFile)) {
-				// TODO: reading out application specific configuration and
-				// process it ...
-				// ApplicationConfiguration myConfig =
-				// myServer.getConfig().getApplicationConfiguration();
-
-				// deploing all needed services
+		    if (myServer.initService(confFile)) {
 				myServer.deployRpcSoapService(
-						org.vivoweb.harvester.soap.MyCustomWebService.class, "CustomWebservice");
-
-				// starting the soap server
-				myServer.startServer();
-
-				// starting the quickserver admin server if configured
+				org.vivoweb.harvester.soap.PeopleListener.class, "PeopleListener");
+      			myServer.startServer();
 				QSAdminServerConfig adminConfig = myServer.getConfig()
 						.getQSAdminServerConfig();
 				if (adminConfig != null)
