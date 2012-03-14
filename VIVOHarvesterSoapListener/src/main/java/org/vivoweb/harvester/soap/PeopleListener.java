@@ -32,171 +32,103 @@
 
 package org.vivoweb.harvester.soap;
 
-import java.util.Date;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
-import org.apache.axis.AxisFault;
-import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
-import org.apache.axis.attachments.AttachmentPart;
-import org.apache.axis.attachments.Attachments;
-import org.apache.axis.attachments.PlainTextDataSource;
-import org.apache.axis.message.MessageElement;
-import org.apache.axis.message.SOAPEnvelope;
-import org.apache.axis.message.SOAPHeaderElement;
+import org.xml.sax.SAXException;
 
 /**
- * This is an  webservice class for people-listener
+ * This is an webservice class for people-listener
+ * 
  * @author Mayank Saini
  */
 public class PeopleListener {
-    
-    /**
-     * Returns a teststring
-     * @return <code>Test</code>
-     */
-    public String testString() {
-        return "Test";
-    }
-    
-    public DataHandler testAttachment(DataHandler attachment) {
-    	return null;
-    }
-    
-    public boolean testBoolean() {
-        return true;
-    }
-    
-    /**
-     * Returns the current system date
-     * @return current date
-     */
-    public Date testDate() {
-        return new Date();
-    }
-    
-    /**
-     * Adds to integer values and returns the result
-     * @param a
-     * @param b
-     * @return <code>a + b</code>
-     */
-    public int testIntAdd(int a, int b) {
-        return a+b;
-    }
-    public String getName(String str, String str2) {
-        return "Hello"+str +"   "+str2;
-    }
-    
-    /**
-     * Returns username and password that was set by the client 
-     * via http authentication 
-     * @return username, password e.g. <code>testUser:testPwd</code>
-     */
-    public String testUserNamePwd() {
-        // getting the current message context
-        MessageContext msgContext = MessageContext.getCurrentContext();
-        
-        // getting username and password set via http authentication
-        String userName = msgContext.getUsername();
-        String pwd = msgContext.getPassword();
-        
-        return userName + ":" + pwd;        
-    }
-    
-    /**
-     * Returns username and password that was set by the client
-     * via custom soap headers
-     * @return username, password. e.g. <code>testUser:testPwd</code>
-     * @throws AxisFault
-     */
-    public String testSoapHeader() throws AxisFault {
-        // getting the current message context
-        MessageContext msgContext = MessageContext.getCurrentContext();
-        
-        // getting the request message
-        Message message = msgContext.getRequestMessage();
-        
-        // getting the request envelope
-        SOAPEnvelope envelope = message.getSOAPEnvelope();
-        
-        // getting our custom soap header
-        SOAPHeaderElement header = envelope.getHeaderByName("http://jSoapServer.org/securityTest", "securityHeader");
-        MessageElement user = header.getChildElement(new QName("http://jSoapServer.org/securityTest","username"));
-        MessageElement pwd = header.getChildElement(new QName("http://jSoapServer.org/securityTest","password"));
-        
-        return user.getValue() + ":" + pwd.getValue();
-    }
-    
-    /**
-     * @throws Exception 
-     */
-    public void testException() throws Exception {
-        throw new Exception("TestException Text");        
-    }
-    
-    /**
-     * Returns the content of a file that was send by the
-     * client via soap attachment
-     * @return
-     * @throws Exception
-     */
-    public String testReceiveAttachment() throws Exception {
-        // getting the current message context
-        MessageContext msgContext = MessageContext.getCurrentContext();
 
-        // getting the request message
-        Message reqMsg = msgContext.getRequestMessage();
-        
-        // getting the attachment implementation
-        Attachments messageAttachments = reqMsg.getAttachmentsImpl();
-        if (messageAttachments == null) {
-            throw new Exception("Attachments not supported");
-        }
-        
-        // getting the type of the attachment
-        // int inputAttachmentType = messageAttachments.getSendType();
-        
-        // how many attachments are there?
-        int attachmentCount= messageAttachments.getAttachmentCount();
-        if (attachmentCount == 0) 
-            throw new Exception("No attachment found");
-        else if (attachmentCount != 1)
-            throw new Exception("Too many attachments as expected.");
-        
-        // getting the attachments
-        AttachmentPart[] attachments = (AttachmentPart[])messageAttachments.getAttachments().toArray(new AttachmentPart[attachmentCount]);
-        
-        // getting the content of the attachment
-        DataHandler dh = attachments[0].getDataHandler();
-        Object content = dh.getContent();
-        
-        return (String)content;
-    }
-    
-    public Object testSendAttachment(int attachmentType, String message) throws Exception {
-        // getting the current message context
-        MessageContext msgContext = MessageContext.getCurrentContext();
+	/**
+	 * Returns a teststring
+	 * 
+	 * @return <code>Test</code>
+	 * @throws SOAPException
+	 */
 
-        // getting the response message object
-        Message respMsg = msgContext.getResponseMessage();        
-        
-        // getting the attachment implementation
-        Attachments messageAttachments = respMsg.getAttachmentsImpl();
-        if (messageAttachments == null) {
-            throw new Exception("Attachments not supported");
-        }        
-        messageAttachments.setSendType(attachmentType);
+	public String getPerson(String p) throws SOAPException {
+		OutputStream outFile = null;
+		PrintWriter out;
+		try {
+			outFile = new FileOutputStream(new File("raw-record/soap.xml"));
+			out = new PrintWriter(outFile);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
-        // creating a datahandler for the attachment
-        DataSource data =  new PlainTextDataSource("Test.txt",message);
-        DataHandler attachmentFile = new DataHandler(data);     
-        
-        // return the attachment as result
-        return attachmentFile;
-    }
-    
+		System.out.println("===============================");
+		MessageContext msgContext = MessageContext.getCurrentContext();
+		SOAPMessage msg = msgContext.getMessage();
+		
+		System.out.println(msg.getProperty("Person").toString());
+		try {
+			msg.writeTo(outFile);
+
+		} catch (SOAPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("Message Context is" + msgContext.toString());
+
+		System.out.println("===============================");
+		try {
+			outFile.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "hello";
+
+	}
+
+	public void testException() throws Exception {
+		throw new Exception("TestException Text");
+	}
+
+	boolean validateXML() throws SAXException {
+
+		SchemaFactory factory = SchemaFactory
+				.newInstance("http://www.w3.org/2001/XMLSchema");
+		File schemaLocation = new File(
+				"/home/mayank/Desktop/schma/Xsd_PERSON.xsd");
+		Schema schema = factory.newSchema(schemaLocation);
+
+		Validator validator = schema.newValidator();
+
+		Source source = new StreamSource("temp/kk");
+
+		try {
+			validator.validate(source);
+
+		} catch (SAXException ex) {
+			return false;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+
+	}
 }
