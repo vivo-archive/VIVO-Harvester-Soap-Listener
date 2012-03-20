@@ -76,8 +76,7 @@ public class DeployPeopleListener {
 		    String confFile =  "jSoapServer.xml";           
 			
 		    if (myServer.initService(confFile)) {
-				myServer.deployRpcSoapService(
-				org.vivoweb.harvester.soap.PeopleListener.class, "PeopleListener");
+				myServer.deployRpcSoapService(org.vivoweb.harvester.soap.PeopleListener.class, "PeopleListener");
       			myServer.startServer();
 				QSAdminServerConfig adminConfig = myServer.getConfig()
 						.getQSAdminServerConfig();

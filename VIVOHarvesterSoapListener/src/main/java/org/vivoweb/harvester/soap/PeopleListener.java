@@ -32,13 +32,18 @@
 
 package org.vivoweb.harvester.soap;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
@@ -47,7 +52,10 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -56,79 +64,53 @@ import org.xml.sax.SAXException;
  * @author Mayank Saini
  */
 public class PeopleListener {
+	String filename;
+	DocumentBuilderFactory dbFactory;
+	DocumentBuilder dBuilder;
+	Document doc;
 
-	/**
-	 * Returns a teststring
-	 * 
-	 * @return <code>Test</code>
-	 * @throws SOAPException
-	 */
-
-	public String getPerson(String p) throws SOAPException {
-		OutputStream outFile = null;
-		PrintWriter out;
-		try {
-			outFile = new FileOutputStream(new File("raw-record/soap.xml"));
-			out = new PrintWriter(outFile);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		System.out.println("===============================");
+	public String getPerson1(String p) throws Exception {
+		String returnvalue = "NULLVALUE";
+		String soapbody = null;
 		MessageContext msgContext = MessageContext.getCurrentContext();
-		SOAPMessage msg = msgContext.getMessage();
-		
-		System.out.println(msg.getProperty("Person").toString());
 		try {
-			msg.writeTo(outFile);
-
-		} catch (SOAPException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+			soapbody = msgContext.getRequestMessage().getSOAPPartAsString();
+			System.out.println(soapbody);
+			dbFactory = DocumentBuilderFactory.newInstance();
+			dBuilder = dbFactory.newDocumentBuilder();
+			doc = dBuilder.parse(new ByteArrayInputStream(soapbody.getBytes()));
+			Node temp = doc.getChildNodes().item(0);
+			String wellformatstring = doc.getChildNodes().item(0)
+					.getTextContent();
+			InputStream in = new ByteArrayInputStream(
+					wellformatstring.getBytes());
+			if (validateXML(in)) {
+				returnvalue = "ok";
+			} else
+				returnvalue = "BAD Format";
+		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Message Context is" + msgContext.toString());
-
-		System.out.println("===============================");
-		try {
-			outFile.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "hello";
-
+		return returnvalue;
 	}
 
-	public void testException() throws Exception {
-		throw new Exception("TestException Text");
-	}
-
-	boolean validateXML() throws SAXException {
-
+	boolean validateXML(InputStream in) throws Exception {
+		boolean result;
 		SchemaFactory factory = SchemaFactory
 				.newInstance("http://www.w3.org/2001/XMLSchema");
 		File schemaLocation = new File(
 				"/home/mayank/Desktop/schma/Xsd_PERSON.xsd");
 		Schema schema = factory.newSchema(schemaLocation);
-
 		Validator validator = schema.newValidator();
-
-		Source source = new StreamSource("temp/kk");
-
+		Source source = new StreamSource(in);
 		try {
 			validator.validate(source);
-
-		} catch (SAXException ex) {
-			return false;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			result = true;
+		} catch (SAXException E) {
+			result = false;
+			E.printStackTrace();
 		}
-		return true;
-
+		return result;
 	}
 }
