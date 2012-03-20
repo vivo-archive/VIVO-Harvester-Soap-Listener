@@ -6,20 +6,15 @@
 
 package org.vivoweb.harvester.soap;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.FileWriter;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -44,6 +39,14 @@ public class PeopleListener {
 	Document doc;
 
 	public String getPerson1(String p) throws Exception {
+		Date date = new Date();
+		String filename = date.toString();
+		filename = filename.replaceAll(" ", "_");
+		filename = filename.replaceAll(":", "_");
+		filename = "/home/mayank/Desktop/data/"+filename;
+		System.out.println(filename);
+		
+
 		String returnvalue = "NULLVALUE";
 		String soapbody = null;
 		MessageContext msgContext = MessageContext.getCurrentContext();
@@ -56,16 +59,23 @@ public class PeopleListener {
 			Node temp = doc.getChildNodes().item(0);
 			String wellformatstring = doc.getChildNodes().item(0)
 					.getTextContent();
+			wellformatstring=wellformatstring.trim();
+			wellformatstring= wellformatstring.replaceAll("> * <", ">\n<");
 			InputStream in = new ByteArrayInputStream(
 					wellformatstring.getBytes());
 			if (validateXML(in)) {
 				returnvalue = "ok";
+				BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+				out.write(wellformatstring);
+				out.close();
+
 			} else
 				returnvalue = "BAD Format";
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		return returnvalue;
 	}
 

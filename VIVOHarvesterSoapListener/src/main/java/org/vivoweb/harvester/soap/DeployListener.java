@@ -38,7 +38,7 @@ import org.quickserver.util.xmlreader.QuickServerConfig;
 import org.w3c.dom.Document;
 
 
-public class DeployPeopleListener {
+public class DeployListener {
 
 	public static void main(String args[]) {
 		try {
