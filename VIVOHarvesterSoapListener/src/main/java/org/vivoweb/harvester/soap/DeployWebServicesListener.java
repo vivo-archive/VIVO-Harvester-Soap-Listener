@@ -12,17 +12,41 @@ import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
 import org.vivoweb.harvester.util.repo.RecordHandler;
 
-public class SoapListener {
+public class DeployWebServicesListener {
 
 	/**
 	 * SLF4J Logger
 	 */
-	private static Logger log = LoggerFactory.getLogger(SoapListener.class);
+	private static Logger log = LoggerFactory.getLogger(DeployWebServicesListener.class);
 	/**
 	 * RecordHandler to put data in.
 	 */
 	private RecordHandler outputRH;
 	
+	/**
+	 * 
+	 */
+	private String decryption;
+	
+	/**
+	 * 
+	 */
+	private String folderPath;
+	
+	/**
+	 * 
+	 */
+	private String soapConfigPath;
+	
+	/**
+	 * 
+	 */
+	private String serviceName;
+	
+	/**
+	 * 
+	 */
+	private String schemaFile;
 	
 	/**
 	 * Command line Constructor
@@ -30,7 +54,7 @@ public class SoapListener {
 	 * @throws IOException error creating task
 	 * @throws UsageException user requested usage message
 	 */
-	private SoapListener(String[] args) throws IOException, UsageException {
+	private DeployWebServicesListener(String[] args) throws IOException, UsageException {
 		this(getParser().parse(args));
 	}
 	
@@ -39,24 +63,25 @@ public class SoapListener {
 	 * @param args option set of parsed args
 	 * @throws IOException error creating task
 	 */
-	private SoapListener(ArgList args) throws IOException {
-		String decryption = args.get("d");
-		String folderPath = args.get("o");
-		String soapConfigPath = args.get("c");
-		String serviceName = args.get("s");
-		init(decryption, folderPath, soapConfigPath, serviceName);
+	private DeployWebServicesListener(ArgList args) throws IOException {
+		this(
+			String decryption = args.get("d");
+			String folderPath = args.get("o");
+			String soapConfigPath = args.get("c");
+			String serviceName = args.get("s");
+			String schemaFile = args.get("x");
+		);
 	}
 	/**
 	 * Library style Constructor
 	 */
-	public SoapListener(String decryption, String folderPath, String soapConfigPath, String serviceName){
-		init(decryption, folderPath, soapConfigPath, serviceName);
-	}
-	/**
-	 * The initializing method called on via the constructors.
-	 */
-	private void init(String decryption, String folderPath, String soapConfigPath, String serviceName){
+	public DeployWebServicesListener(String decryption, String folderPath, String soapConfigPath, String serviceName, String schemaFile){
 		
+		this.decryption = decryption;
+		this.folderPath = folderPath;
+		this.soapConfigPath = soapConfigPath;
+		this.serviceName = serviceName;
+		this.schemaFile = schemaFile;
 	}
 	
 	/**
@@ -68,21 +93,19 @@ public class SoapListener {
 			// creating a new soap server
 		
 			SoapServer myServer = new SoapServer();
-			// configuring the server properties
-		    String confFile =  "jSoapServer.xml";           
 			
-		    if (myServer.initService(confFile)) {
-				myServer.deployRpcSoapService(org.jSoapServer.WebServicesListener.class, "PeopleListener");
+		    if (myServer.initService(this.soapConfigPath)) {
+		    	myServer.deployRpcSoapService(new WebServicesListener(this.folderPath, this.schemaFile),this.serviceName);
+				//myServer.deployRpcSoapService(org.jSoapServer.WebServicesListener.class, "PeopleListener");
       			myServer.startServer();
-				QSAdminServerConfig adminConfig = myServer.getConfig()
-						.getQSAdminServerConfig();
-				if (adminConfig != null)
+				QSAdminServerConfig adminConfig = myServer.getConfig().getQSAdminServerConfig();
+				if (adminConfig != null) {
 					myServer.startQSAdminServer();
-			}
+				}
+		    }
 		} catch (Exception e) {
 			System.err.println("Error in server : " + e);
 			e.printStackTrace();
-
 		}
 	
 	}
@@ -92,12 +115,13 @@ public class SoapListener {
 	 * @return the ArgParser
 	 */
 	private static ArgParser getParser() {
-		ArgParser parser = new ArgParser("SoapListener");
+		ArgParser parser = new ArgParser("DeployWebServicesListener");
 		parser.addArgument(new ArgDef().setShortOption('d').setLongOpt("decrypt").withParameter(true, "DECRYPT").setDescription("The SEARCHMESSAGE file path.").setRequired(true));
 		parser.addArgument(new ArgDef().setShortOption('c').setLongOpt("configFile").withParameter(true, "CONFIG").setDescription("The location of jSoapServer config file").setRequired(true));
 		parser.addArgument(new ArgDef().setShortOption('o').setLongOpt("output").withParameter(true, "OUTPUT_FOLDER").setDescription("result file folder path").setRequired(true));
 		parser.addArgument(new ArgDef().setShortOption('s').setLongOpt("sericeName").withParameter(true, "SERVICE_NAME").setDescription("The name of the published web service").setRequired(true));
 		parser.addArgument(new ArgDef().setShortOption('O').setLongOpt("outputOverride").withParameterValueMap("RH_PARAM", "VALUE").setDescription("override the RH_PARAM of output recordhandler using VALUE").setRequired(false));
+		parser.addArgument(new ArgDef().setShortOption('x').setLongOpt("schemaFile").withParameter(true,"SCHEMA_FILE").setDescription("This is the xsd file to compare your incoming xml against").setRequired(false));
 		return parser;
 	}
 	
@@ -110,7 +134,7 @@ public class SoapListener {
 		try {
 			InitLog.initLogger(args, getParser());
 			log.info(getParser().getAppName() + ": Start");
-			new SoapListener(args).execute();
+			new DeployWebServicesListener(args).execute();
 		} catch(IllegalArgumentException e) {
 			log.error(e.getMessage());
 			log.debug("Stacktrace:",e);

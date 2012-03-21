@@ -62,20 +62,44 @@ import org.xml.sax.SAXException;
  * 
  * @author Mayank Saini
  */
-public class PeopleListener {
+public class WebServicesListener {
 	String filename;
 	DocumentBuilderFactory dbFactory;
 	DocumentBuilder dBuilder;
 	Document doc;
-
+	
+	/**
+	 * 
+	 */
+	private File folderPath;
+	
+	/**
+	 * 
+	 */
+	private File schemaFile;
+	
+	public WebServicesListener(String folderPath, String schemaFile) {
+		
+		this.folderPath = new File(folderPath);
+		this.schemaFile = new File(schemaFile);
+		
+		
+		if ( ! this.folderPath.isDirectory() || ! this.folderPath.canWrite() ) {
+			throw new IllegalArgumentException("Output directory does not exist, is not writeable, or is not a directory!");
+		}
+		
+		if ( ! this.schemaFile.exists() || this.schemaFile.isDirectory() || ! this.schemaFile.canRead() ) {
+			throw new IllegalArgumentException("Schema file does not exist!");
+		}
+ 	}
 	/**
 	 * Returns a teststring
 	 * 
 	 * @return <code>Test</code>
 	 * @throws SOAPException
 	 */
-
-	public String getPerson(SOAPElement p) throws SOAPException {
+	
+	public String getMessage(SOAPElement p) throws SOAPException {
 		OutputStream outFile = null;
 		PrintWriter out;
 		try {
@@ -114,7 +138,7 @@ public class PeopleListener {
 
 	}
 
-	public String getPerson1(String p) throws SOAPException {
+	public String getMessage(String p) throws SOAPException {
 		String soapbody = null;
 		MessageContext msgContext = MessageContext.getCurrentContext();
 		try {
@@ -124,12 +148,12 @@ public class PeopleListener {
 			dbFactory = DocumentBuilderFactory.newInstance();
 			dBuilder = dbFactory.newDocumentBuilder();
 			
-			doc = dBuilder.parse(new ByteArrayInputStream(
-					soapbody.getBytes()));
-			String wellformatstring = doc.getChildNodes().item(0)
-					.getTextContent();
+			doc = dBuilder.parse(new ByteArrayInputStream(soapbody.getBytes()));
+			String wellformatstring = doc.getChildNodes().item(0).getTextContent();
 			System.out.println("wellformatstring" + wellformatstring);
 		
+			
+			
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -144,28 +168,23 @@ public class PeopleListener {
 			e.printStackTrace();
 		}
 
-		return "1234";
-
 	}
 
 	public void testException() throws Exception {
 		throw new Exception("TestException Text");
 	}
 
-	/*boolean validateXML(InputStream in ) throws SAXException {
+	protected boolean validateXML(InputStream in ) throws SAXException {
 
-		SchemaFactory factory = SchemaFactory
-				.newInstance("http://www.w3.org/2001/XMLSchema");
-		File schemaLocation = new File(
-				"/home/mayank/Desktop/schma/Xsd_PERSON.xsd");
-		Schema schema = factory.newSchema(schemaLocation);
+		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+		Schema schema = factory.newSchema(this.schemaFile);
 
-		Validator validator = schema.newValidator();
+		Validator saxValidator = schema.newValidator();
 
 		Source source = new StreamSource(in);
 
 		try {
-			validator.validate(source);
+			saxValidator.validate(source);
 
 		} catch (SAXException ex) {
 			ex.printStackTrace();
@@ -180,5 +199,5 @@ public class PeopleListener {
 		}
 		return true;
 
-	}*/
+	}
 }
