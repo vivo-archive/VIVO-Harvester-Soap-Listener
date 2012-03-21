@@ -31,9 +31,7 @@ import org.xml.sax.SAXException;
  */
 public class VIVOWebServicesListener {
 	String filename;
-	DocumentBuilderFactory dbFactory;
-	DocumentBuilder dBuilder;
-	Document doc;
+	
 	
 	/**
 	 * folderPath that we will output our XML message
@@ -68,11 +66,9 @@ public class VIVOWebServicesListener {
 		this.schemaFile = new File((String) WebServerSingleton.getProperty("schemaFile"));
 		this.folderPath = new File((String) WebServerSingleton.getProperty("folderPath"));
 		
-		Date date = new Date();
-
 		// Get number of milliseconds since January 1, 1970, 00:00:00 GMT
 		// represented by this Date object.
-		String filename = new Long(date.getTime()).toString();
+		String filename = new Long(new Date().getTime()).toString();
 
 		// Use above time to generate Uniqueu filename for received messages
 		filename = this.folderPath + "/" + filename;
@@ -89,41 +85,35 @@ public class VIVOWebServicesListener {
 
 			// get the soap body from the Soap message as String
 			soapbody = msgContext.getRequestMessage().getSOAPPartAsString();
-			dbFactory = DocumentBuilderFactory.newInstance();
-			dBuilder = dbFactory.newDocumentBuilder();
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
 			// Build the DOM document from the Soap body, so that we can extract
 			// a specific reuired section of DOM using SAX parser
-			doc = dBuilder.parse(new ByteArrayInputStream(soapbody.getBytes()));
+			Document doc = dBuilder.parse(new ByteArrayInputStream(soapbody.getBytes()));
 
-			// Get the text content of Soap body payload. This will be actual
-			// received message
-			String wellformatstring = doc.getChildNodes().item(0)
-					.getTextContent();
+			// Get the text content of Soap body payload. This will be actual received message
+			// TODO: Explain why item(0) and not all child nodes
+			String wellformatstring = doc.getChildNodes().item(0).getTextContent();
 
+			// trimming whitespace and placing the \n between every > < so that it will be human readable
 			wellformatstring = wellformatstring.trim();
-
-			// Place the \n between every > < so that I will look nice
-
 			wellformatstring = wellformatstring.replaceAll("> * <", ">\n<");
 
-			InputStream in = new ByteArrayInputStream(
-					wellformatstring.getBytes());
+			// format String to an inputstream to be read by sax
+			InputStream in = new ByteArrayInputStream(wellformatstring.getBytes());
 
 			// Validate to see if Received message is as per specified XSD
-
 			if (validateXML(in)) {
 
-				returnvalue = "ok";
 				// Write the OutPUT file
-				BufferedWriter out = new BufferedWriter(
-						new FileWriter(filename));
+				BufferedWriter out = new BufferedWriter(new FileWriter(filename));
 				out.write(wellformatstring);
 				out.close();
-
+				
+				returnvalue = "ok";				//TODO:  Is this the proper format?  Should probably format in such a way that if a bad write out occurs it doesn't send sucess
 			} else {// if the format is BAD
-				returnvalue = "BAD Format";
-
+				returnvalue = "BAD Format";		//TODO:  Is this the proper return message, is there a standard format
 			}
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
