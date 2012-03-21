@@ -16,12 +16,12 @@ import org.jSoapServer.*;
 //import org.quickserver.util.*;
 import org.quickserver.util.xmlreader.*;
 
-public class DeployWebServicesListener {
+public class DeployVIVOWebServicesListener {
 
 	/**
 	 * SLF4J Logger
 	 */
-	private static Logger log = LoggerFactory.getLogger(DeployWebServicesListener.class);
+	private static Logger log = LoggerFactory.getLogger(DeployVIVOWebServicesListener.class);
 	/**
 	 * RecordHandler to put data in.
 	 */
@@ -58,7 +58,7 @@ public class DeployWebServicesListener {
 	 * @throws IOException error creating task
 	 * @throws UsageException user requested usage message
 	 */
-	private DeployWebServicesListener(String[] args) throws IOException, UsageException {
+	private DeployVIVOWebServicesListener(String[] args) throws IOException, UsageException {
 		this(getParser().parse(args));
 	}
 	
@@ -67,7 +67,7 @@ public class DeployWebServicesListener {
 	 * @param args option set of parsed args
 	 * @throws IOException error creating task
 	 */
-	private DeployWebServicesListener(ArgList args) throws IOException {
+	private DeployVIVOWebServicesListener(ArgList args) throws IOException {
 		this(
 			args.get("d"), args.get("o"), args.get("c"), args.get("s"), args.get("x")
 		);
@@ -75,7 +75,7 @@ public class DeployWebServicesListener {
 	/**
 	 * Library style Constructor
 	 */
-	public DeployWebServicesListener(String decryption, String folderPath, String soapConfigPath, String serviceName, String schemaFile){
+	public DeployVIVOWebServicesListener(String decryption, String folderPath, String soapConfigPath, String serviceName, String schemaFile){
 		
 		this.decryption = decryption;
 		this.folderPath = folderPath;
@@ -137,7 +137,7 @@ public class DeployWebServicesListener {
 		try {
 			InitLog.initLogger(args, getParser());
 			log.info(getParser().getAppName() + ": Start");
-			new DeployWebServicesListener(args).execute();
+			new DeployVIVOWebServicesListener(args).execute();
 		} catch(IllegalArgumentException e) {
 			log.error(e.getMessage());
 			log.debug("Stacktrace:",e);
