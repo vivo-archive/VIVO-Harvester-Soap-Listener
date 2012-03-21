@@ -98,7 +98,7 @@ public class DeployWebServicesListener {
 			SoapServer myServer = new SoapServer();
 			
 		    if (myServer.initService(this.soapConfigPath)) {
-		    	myServer.deployRpcSoapService(org.vivoweb.harvester.soap.WebServicesListener.class,this.serviceName);
+		    	myServer.deployRpcSoapService(org.vivoweb.harvester.soap.VIVOWebServicesListener.class,this.serviceName);
 				//myServer.deployRpcSoapService(org.jSoapServer.WebServicesListener.class, "PeopleListener");
       			myServer.startServer();
 				QSAdminServerConfig adminConfig = myServer.getConfig().getQSAdminServerConfig();

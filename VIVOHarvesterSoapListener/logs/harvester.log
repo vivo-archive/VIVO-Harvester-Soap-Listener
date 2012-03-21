@@ -82,3 +82,11 @@ java.lang.IllegalArgumentException: Missing Argument: d
 2012-03-21 13:56:29.149 DEBUG [o.v.h.u.a.ArgList] running DeployWebServicesListener
 2012-03-21 13:56:29.150 DEBUG [o.v.h.u.a.ArgList] command line args: -d false -c /home/mayank/git/VIVO-Harvester-Soap-Listener1/VIVOHarvesterSoapListener/jSoapServer.xml -o /home/mayank/Desktop/newdata -x /home/mayank/Desktop/newschema/Xsd_PERSON.xsd -s WebServicesListener
 2012-03-21 13:56:29.716 INFO  [o.v.h.s.DeployWebServicesListener] DeployWebServicesListener: End
+2012-03-21 15:13:48.296 INFO  [o.v.h.s.DeployWebServicesListener] DeployWebServicesListener: Start
+2012-03-21 15:13:48.299 DEBUG [o.v.h.u.a.ArgList] running DeployWebServicesListener
+2012-03-21 15:13:48.302 DEBUG [o.v.h.u.a.ArgList] command line args: -d false -c /home/mayank/git/VIVO-Harvester-Soap-Listener1/VIVOHarvesterSoapListener/jSoapServer.xml -o /home/mayank/Desktop/newdata -x /home/mayank/Desktop/newschema/Xsd_PERSON.xsd -s WebServicesListener
+2012-03-21 15:13:48.541 INFO  [o.v.h.s.DeployWebServicesListener] DeployWebServicesListener: End
+2012-03-21 15:14:19.403 INFO  [o.v.h.s.DeployWebServicesListener] DeployWebServicesListener: Start
+2012-03-21 15:14:19.406 DEBUG [o.v.h.u.a.ArgList] running DeployWebServicesListener
+2012-03-21 15:14:19.408 DEBUG [o.v.h.u.a.ArgList] command line args: -d false -c /home/mayank/git/VIVO-Harvester-Soap-Listener3/VIVOHarvesterSoapListener/jSoapServer.xml -o /home/mayank/Desktop/newdata -x /home/mayank/Desktop/newschema/Xsd_PERSON.xsd -s WebServicesListener
+2012-03-21 15:14:19.978 INFO  [o.v.h.s.DeployWebServicesListener] DeployWebServicesListener: End
