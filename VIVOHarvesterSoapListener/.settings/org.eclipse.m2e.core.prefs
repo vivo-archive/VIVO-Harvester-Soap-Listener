@@ -1,5 +1,5 @@
-#Tue Mar 06 17:42:31 EST 2012
-activeProfiles=
+#Wed Mar 21 09:32:30 EDT 2012
+activeProfiles=clean dependency\:copy-dependencies
 eclipse.preferences.version=1
 resolveWorkspaceProjects=true
 version=1

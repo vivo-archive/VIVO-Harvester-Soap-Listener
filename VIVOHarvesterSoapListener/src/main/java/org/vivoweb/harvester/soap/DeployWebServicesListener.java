@@ -11,6 +11,10 @@ import org.vivoweb.harvester.util.args.ArgList;
 import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
 import org.vivoweb.harvester.util.repo.RecordHandler;
+import org.jSoapServer.*;
+//import org.quickserver.*;
+//import org.quickserver.util.*;
+import org.quickserver.util.xmlreader.*;
 
 public class DeployWebServicesListener {
 
@@ -65,11 +69,7 @@ public class DeployWebServicesListener {
 	 */
 	private DeployWebServicesListener(ArgList args) throws IOException {
 		this(
-			String decryption = args.get("d");
-			String folderPath = args.get("o");
-			String soapConfigPath = args.get("c");
-			String serviceName = args.get("s");
-			String schemaFile = args.get("x");
+			args.get("d"), args.get("o"), args.get("c"), args.get("s"), args.get("x")
 		);
 	}
 	/**
@@ -95,7 +95,7 @@ public class DeployWebServicesListener {
 			SoapServer myServer = new SoapServer();
 			
 		    if (myServer.initService(this.soapConfigPath)) {
-		    	myServer.deployRpcSoapService(new WebServicesListener(this.folderPath, this.schemaFile),this.serviceName);
+		    	myServer.deployRpcSoapService(org.vivoweb.harvester.soap.VIVOWebServicesListener.class,this.serviceName);
 				//myServer.deployRpcSoapService(org.jSoapServer.WebServicesListener.class, "PeopleListener");
       			myServer.startServer();
 				QSAdminServerConfig adminConfig = myServer.getConfig().getQSAdminServerConfig();

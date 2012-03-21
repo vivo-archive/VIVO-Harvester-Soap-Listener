@@ -30,7 +30,7 @@
  * $Revision: 1.1 $
  * ======================================================================= */
 
-package org.jSoapServer;
+package org.vivoweb.harvester.soap;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -62,7 +62,7 @@ import org.xml.sax.SAXException;
  * 
  * @author Mayank Saini
  */
-public class WebServicesListener {
+public class VIVOWebServicesListener {
 	String filename;
 	DocumentBuilderFactory dbFactory;
 	DocumentBuilder dBuilder;
@@ -71,14 +71,15 @@ public class WebServicesListener {
 	/**
 	 * 
 	 */
-	private File folderPath;
+	private File folderPath = new File("/home/vsposato/web_service");
 	
 	/**
 	 * 
 	 */
-	private File schemaFile;
+	private File schemaFile = new File("/home/vsposato/web_service/PERSON.xsd");
 	
-	public WebServicesListener(String folderPath, String schemaFile) {
+	/*public VIVOWebServicesListener(String folderPath, String schemaFile) {
+		
 		
 		this.folderPath = new File(folderPath);
 		this.schemaFile = new File(schemaFile);
@@ -91,7 +92,8 @@ public class WebServicesListener {
 		if ( ! this.schemaFile.exists() || this.schemaFile.isDirectory() || ! this.schemaFile.canRead() ) {
 			throw new IllegalArgumentException("Schema file does not exist!");
 		}
- 	}
+ 	}*/
+	
 	/**
 	 * Returns a teststring
 	 * 
@@ -99,7 +101,7 @@ public class WebServicesListener {
 	 * @throws SOAPException
 	 */
 	
-	public String getMessage(SOAPElement p) throws SOAPException {
+	public String getMessageOld(SOAPElement p) throws SOAPException {
 		OutputStream outFile = null;
 		PrintWriter out;
 		try {
@@ -167,7 +169,8 @@ public class WebServicesListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
+		return "Success";
 	}
 
 	public void testException() throws Exception {
