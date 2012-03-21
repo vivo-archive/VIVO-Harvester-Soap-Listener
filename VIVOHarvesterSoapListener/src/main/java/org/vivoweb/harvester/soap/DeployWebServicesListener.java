@@ -82,6 +82,9 @@ public class DeployWebServicesListener {
 		this.soapConfigPath = soapConfigPath;
 		this.serviceName = serviceName;
 		this.schemaFile = schemaFile;
+		
+		WebServerSingleton.getInstance().setProperty("schemaFile", schemaFile);
+		WebServerSingleton.getInstance().setProperty("folderPath", folderPath);
 	}
 	
 	/**
@@ -95,7 +98,7 @@ public class DeployWebServicesListener {
 			SoapServer myServer = new SoapServer();
 			
 		    if (myServer.initService(this.soapConfigPath)) {
-		    	myServer.deployRpcSoapService(org.vivoweb.harvester.soap.VIVOWebServicesListener.class,this.serviceName);
+		    	myServer.deployRpcSoapService(org.vivoweb.harvester.soap.WebServicesListener.class,this.serviceName);
 				//myServer.deployRpcSoapService(org.jSoapServer.WebServicesListener.class, "PeopleListener");
       			myServer.startServer();
 				QSAdminServerConfig adminConfig = myServer.getConfig().getQSAdminServerConfig();
@@ -111,7 +114,7 @@ public class DeployWebServicesListener {
 	}
 	
 	/**
-	 * Get the ArgParser for this task
+	 * Get the ArgParserfdgdgfdgfd for this task
 	 * @return the ArgParser
 	 */
 	private static ArgParser getParser() {
@@ -119,7 +122,7 @@ public class DeployWebServicesListener {
 		parser.addArgument(new ArgDef().setShortOption('d').setLongOpt("decrypt").withParameter(true, "DECRYPT").setDescription("The SEARCHMESSAGE file path.").setRequired(true));
 		parser.addArgument(new ArgDef().setShortOption('c').setLongOpt("configFile").withParameter(true, "CONFIG").setDescription("The location of jSoapServer config file").setRequired(true));
 		parser.addArgument(new ArgDef().setShortOption('o').setLongOpt("output").withParameter(true, "OUTPUT_FOLDER").setDescription("result file folder path").setRequired(true));
-		parser.addArgument(new ArgDef().setShortOption('s').setLongOpt("sericeName").withParameter(true, "SERVICE_NAME").setDescription("The name of the published web service").setRequired(true));
+		parser.addArgument(new ArgDef().setShortOption('s').setLongOpt("serviceName").withParameter(true, "SERVICE_NAME").setDescription("The name of the published web service").setRequired(true));
 		parser.addArgument(new ArgDef().setShortOption('O').setLongOpt("outputOverride").withParameterValueMap("RH_PARAM", "VALUE").setDescription("override the RH_PARAM of output recordhandler using VALUE").setRequired(false));
 		parser.addArgument(new ArgDef().setShortOption('x').setLongOpt("schemaFile").withParameter(true,"SCHEMA_FILE").setDescription("This is the xsd file to compare your incoming xml against").setRequired(false));
 		return parser;
