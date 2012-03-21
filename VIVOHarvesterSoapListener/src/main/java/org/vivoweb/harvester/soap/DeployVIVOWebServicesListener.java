@@ -83,6 +83,8 @@ public class DeployVIVOWebServicesListener {
 		this.serviceName = serviceName;
 		this.schemaFile = schemaFile;
 		
+		//TODO:  SchemaFile, FolderPath needs warning if the actual directories are null
+		// In this state, no one will now until someone calls the service to pass information
 		WebServerSingleton.getInstance().setProperty("schemaFile", this.schemaFile);
 		WebServerSingleton.getInstance().setProperty("folderPath", this.folderPath);
 	}
@@ -93,10 +95,11 @@ public class DeployVIVOWebServicesListener {
 	 */
 	public void execute() throws IOException {
 		try {
-			// creating a new soap server
-		
+			// creating a new soap server TODO:  rename ... please
 			SoapServer myServer = new SoapServer();
 			
+			
+			//TODO clean me (messy hard to read etc)
 		    if (myServer.initService(this.soapConfigPath)) {
 		    	myServer.deployRpcSoapService(org.vivoweb.harvester.soap.VIVOWebServicesListener.class,this.serviceName);
 				//myServer.deployRpcSoapService(org.jSoapServer.WebServicesListener.class, "PeopleListener");

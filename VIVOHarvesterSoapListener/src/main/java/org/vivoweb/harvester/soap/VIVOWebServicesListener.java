@@ -130,12 +130,10 @@ public class VIVOWebServicesListener {
 		Schema schema = factory.newSchema(this.schemaFile);
 
 		Validator saxValidator = schema.newValidator();
-
 		Source source = new StreamSource(in);
 
 		try {
 			saxValidator.validate(source);
-
 		} catch (SAXException ex) {
 			ex.printStackTrace();
 			return false;
