@@ -1,73 +1,69 @@
-/*
- *  jSoapServer is a Java library implementing a multi-threaded
- *  soap server which can be easily integrated into java applications
- *  to provide a SOAP Interface for external programmers.
- *  
- *  Copyright (C) 2007 Martin Thelian
- *  
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- *  
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *  
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *  
- *  For more information, please email thelian@users.sourceforge.net
- */
+package org.vivoweb.harvester.soap;
 
-/* =======================================================================
- * Revision Control Information
- * $Source: /cvsroot/jsoapserver/jSoapServer/src/main/java/org/jSoapServer/SoapServer.java,v $
- * $Author: thelian $
- * $Date: 2010/05/06 10:53:20 $
- * $Revision: 1.3 $
- * ======================================================================= */
-
-package org.jSoapServer;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.xml.namespace.QName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.vivoweb.harvester.fetch.WOSFetch;
+import org.vivoweb.harvester.util.InitLog;
+import org.vivoweb.harvester.util.args.ArgDef;
+import org.vivoweb.harvester.util.args.ArgList;
+import org.vivoweb.harvester.util.args.ArgParser;
+import org.vivoweb.harvester.util.args.UsageException;
+import org.vivoweb.harvester.util.repo.RecordHandler;
 
-import org.apache.axis.EngineConfiguration;
-import org.apache.axis.WSDDEngineConfiguration;
-import org.apache.axis.deployment.wsdd.WSDDDeployment;
-import org.apache.axis.deployment.wsdd.WSDDDocument;
-import org.apache.axis.server.AxisServer;
-import org.apache.axis.utils.ClassUtils;
-import org.apache.axis.utils.XMLUtils;
-import org.apache.axis.utils.cache.ClassCache;
-import org.jSoapServer.utils.FileUtils;
-import org.jSoapServer.ISoapServer;
-import org.jSoapServer.SoapServer;
-import org.quickserver.net.AppException;
-import org.quickserver.net.server.QuickServer;
-import org.quickserver.util.xmlreader.QSAdminServerConfig;
-import org.quickserver.util.xmlreader.QuickServerConfig;
-import org.w3c.dom.Document;
+public class SoapListener {
 
-
-public class DeployPeopleListener {
-
-	public static void main(String args[]) {
+	/**
+	 * SLF4J Logger
+	 */
+	private static Logger log = LoggerFactory.getLogger(SoapListener.class);
+	/**
+	 * RecordHandler to put data in.
+	 */
+	private RecordHandler outputRH;
+	
+	
+	/**
+	 * Command line Constructor
+	 * @param args commandline arguments
+	 * @throws IOException error creating task
+	 * @throws UsageException user requested usage message
+	 */
+	private SoapListener(String[] args) throws IOException, UsageException {
+		this(getParser().parse(args));
+	}
+	
+	/**
+	 * Arglist Constructor
+	 * @param args option set of parsed args
+	 * @throws IOException error creating task
+	 */
+	private SoapListener(ArgList args) throws IOException {
+		String decryption = args.get("d");
+		String folderPath = args.get("o");
+		String soapConfigPath = args.get("c");
+		String serviceName = args.get("s");
+		init(decryption, folderPath, soapConfigPath, serviceName);
+	}
+	/**
+	 * Library style Constructor
+	 */
+	public SoapListener(String decryption, String folderPath, String soapConfigPath, String serviceName){
+		init(decryption, folderPath, soapConfigPath, serviceName);
+	}
+	/**
+	 * The initializing method called on via the constructors.
+	 */
+	private void init(String decryption, String folderPath, String soapConfigPath, String serviceName){
+		
+	}
+	
+	/**
+	 * Executes the task
+	 * @throws IOException error processing record handler
+	 */
+	public void execute() throws IOException {
 		try {
 			// creating a new soap server
 		
@@ -87,6 +83,52 @@ public class DeployPeopleListener {
 			System.err.println("Error in server : " + e);
 			e.printStackTrace();
 
+		}
+	
+	}
+	
+	/**
+	 * Get the ArgParser for this task
+	 * @return the ArgParser
+	 */
+	private static ArgParser getParser() {
+		ArgParser parser = new ArgParser("SoapListener");
+		parser.addArgument(new ArgDef().setShortOption('d').setLongOpt("decrypt").withParameter(true, "DECRYPT").setDescription("The SEARCHMESSAGE file path.").setRequired(true));
+		parser.addArgument(new ArgDef().setShortOption('c').setLongOpt("configFile").withParameter(true, "CONFIG").setDescription("The location of jSoapServer config file").setRequired(true));
+		parser.addArgument(new ArgDef().setShortOption('o').setLongOpt("output").withParameter(true, "OUTPUT_FOLDER").setDescription("result file folder path").setRequired(true));
+		parser.addArgument(new ArgDef().setShortOption('s').setLongOpt("sericeName").withParameter(true, "SERVICE_NAME").setDescription("The name of the published web service").setRequired(true));
+		parser.addArgument(new ArgDef().setShortOption('O').setLongOpt("outputOverride").withParameterValueMap("RH_PARAM", "VALUE").setDescription("override the RH_PARAM of output recordhandler using VALUE").setRequired(false));
+		return parser;
+	}
+	
+	/**
+	 * Main method
+	 * @param args commandline arguments
+	 */
+	public static void main(String... args) {
+		Exception error = null;
+		try {
+			InitLog.initLogger(args, getParser());
+			log.info(getParser().getAppName() + ": Start");
+			new SoapListener(args).execute();
+		} catch(IllegalArgumentException e) {
+			log.error(e.getMessage());
+			log.debug("Stacktrace:",e);
+			System.out.println(getParser().getUsage());
+			error = e;
+		} catch(UsageException e) {
+			log.info("Printing Usage:");
+			System.out.println(getParser().getUsage());
+			error = e;
+		} catch(Exception e) {
+			log.error(e.getMessage());
+			log.debug("Stacktrace:",e);
+			error = e;
+		} finally {
+			log.info(getParser().getAppName() + ": End");
+			if(error != null) {
+				System.exit(1);
+			}
 		}
 	}
 
