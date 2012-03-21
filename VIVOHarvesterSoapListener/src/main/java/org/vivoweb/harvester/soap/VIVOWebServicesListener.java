@@ -32,13 +32,16 @@
 
 package org.vivoweb.harvester.soap;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,6 +58,7 @@ import javax.xml.validation.Validator;
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -140,41 +144,42 @@ public class VIVOWebServicesListener {
 
 	}
 
-	public String getMessage(String p) throws SOAPException {
+	public String getMessage(String p) throws SOAPException, SAXException, IOException, ParserConfigurationException {
+		Date date = new Date();
+		String filename = date.toString();
+		filename = filename.replaceAll(" ", "_");
+		filename = filename.replaceAll(":", "_");
+		filename = "/home/mayank/Desktop/data/"+filename;
+		System.out.println(filename);
+
+		String returnvalue = "NULLVALUE";
 		String soapbody = null;
 		MessageContext msgContext = MessageContext.getCurrentContext();
 		try {
 			soapbody = msgContext.getRequestMessage().getSOAPPartAsString();
 			System.out.println(soapbody);
-
 			dbFactory = DocumentBuilderFactory.newInstance();
 			dBuilder = dbFactory.newDocumentBuilder();
-			
 			doc = dBuilder.parse(new ByteArrayInputStream(soapbody.getBytes()));
 			String wellformatstring = doc.getChildNodes().item(0).getTextContent();
-			System.out.println("wellformatstring" + wellformatstring);
-		
-			
-			
+			wellformatstring=wellformatstring.trim();
+			wellformatstring= wellformatstring.replaceAll("> * <", ">\n<");
+			InputStream in = new ByteArrayInputStream(
+					wellformatstring.getBytes());
+			if (validateXML(in)) {
+				returnvalue = "ok";
+				BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+				out.write(wellformatstring);
+				out.close();
+
+			} else
+				returnvalue = "BAD Format";
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		
-		return "Success";
-	}
 
-	public void testException() throws Exception {
-		throw new Exception("TestException Text");
+		return returnvalue;
 	}
 
 	protected boolean validateXML(InputStream in ) throws SAXException {
