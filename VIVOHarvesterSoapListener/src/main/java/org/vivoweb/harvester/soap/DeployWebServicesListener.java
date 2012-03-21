@@ -83,8 +83,8 @@ public class DeployWebServicesListener {
 		this.serviceName = serviceName;
 		this.schemaFile = schemaFile;
 		
-		WebServerSingleton.getInstance().setProperty("schemaFile", schemaFile);
-		WebServerSingleton.getInstance().setProperty("folderPath", folderPath);
+		WebServerSingleton.getInstance().setProperty("schemaFile", this.schemaFile);
+		WebServerSingleton.getInstance().setProperty("folderPath", this.folderPath);
 	}
 	
 	/**
