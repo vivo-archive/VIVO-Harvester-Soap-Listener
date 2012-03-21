@@ -76,7 +76,7 @@ public class DeployPeopleListener {
 		    String confFile =  "jSoapServer.xml";           
 			
 		    if (myServer.initService(confFile)) {
-				myServer.deployRpcSoapService(org.jSoapServer.PeopleListener.class, "PeopleListener");
+				myServer.deployRpcSoapService(org.jSoapServer.WebServicesListener.class, "PeopleListener");
       			myServer.startServer();
 				QSAdminServerConfig adminConfig = myServer.getConfig()
 						.getQSAdminServerConfig();
