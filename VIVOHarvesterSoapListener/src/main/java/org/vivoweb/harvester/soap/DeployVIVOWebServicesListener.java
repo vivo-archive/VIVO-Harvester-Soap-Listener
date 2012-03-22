@@ -1,20 +1,17 @@
 package org.vivoweb.harvester.soap;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.jSoapServer.SoapServer;
+import org.quickserver.util.xmlreader.QSAdminServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vivoweb.harvester.fetch.WOSFetch;
 import org.vivoweb.harvester.util.InitLog;
 import org.vivoweb.harvester.util.args.ArgDef;
 import org.vivoweb.harvester.util.args.ArgList;
 import org.vivoweb.harvester.util.args.ArgParser;
 import org.vivoweb.harvester.util.args.UsageException;
-import org.vivoweb.harvester.util.repo.RecordHandler;
-import org.jSoapServer.*;
-//import org.quickserver.*;
-//import org.quickserver.util.*;
-import org.quickserver.util.xmlreader.*;
 
 public class DeployVIVOWebServicesListener {
 
@@ -22,33 +19,29 @@ public class DeployVIVOWebServicesListener {
 	 * SLF4J Logger
 	 */
 	private static Logger log = LoggerFactory.getLogger(DeployVIVOWebServicesListener.class);
+
 	/**
-	 * RecordHandler to put data in.
-	 */
-	private RecordHandler outputRH;
-	
-	/**
-	 * 
+	 * This will hold the value of the type of encryption that will be used
 	 */
 	private String decryption;
 	
 	/**
-	 * 
+	 * This will hold the folder path that incoming XML messages will be saved into
 	 */
 	private String folderPath;
 	
 	/**
-	 * 
+	 * This will hold the path to the jSoapServer config file
 	 */
 	private String soapConfigPath;
 	
 	/**
-	 * 
+	 * This will hold the published name of the service in question
 	 */
 	private String serviceName;
 	
 	/**
-	 * 
+	 * This will hold the name of schema file that incoming XML messages will be validated against
 	 */
 	private String schemaFile;
 	
@@ -83,10 +76,28 @@ public class DeployVIVOWebServicesListener {
 		this.serviceName = serviceName;
 		this.schemaFile = schemaFile;
 		
-		//TODO:  SchemaFile, FolderPath needs warning if the actual directories are null
+		// Create a file object to test the schemaFile with
+		File testSchema = new File(this.schemaFile);
+		
+		// Check to see if the schemaFile a) is a file, b) can be read, and c) exists 
+		if ( ! testSchema.isFile() || ! testSchema.canRead() || ! testSchema.exists() ) {
+			// The schemaFile is not ready for us, so we need to throw an exception
+			throw new IllegalArgumentException("Schema file is either not a file, does not exist, or cannot be read from!");
+		}
+
+		// Create a file object to test the output folderPath with
+		File testFolderPath = new File(this.folderPath);
+		
+		// Check to see if the output folderPath a) is a directory, b) can be written, and c) exists
+		if ( ! testFolderPath.isDirectory() || ! testFolderPath.canWrite() || ! testFolderPath.exists() ) {
+			// The output folderPath is not ready for us, so we need to throw an exception
+			throw new IllegalArgumentException("Output folder path is either not a directory, does not exist, or cannot be written to!");
+		}
+		
+		WebServerSingleton.getInstance();
 		// In this state, no one will now until someone calls the service to pass information
-		WebServerSingleton.getInstance().setProperty("schemaFile", this.schemaFile);
-		WebServerSingleton.getInstance().setProperty("folderPath", this.folderPath);
+		WebServerSingleton.setProperty("schemaFile", this.schemaFile);
+		WebServerSingleton.setProperty("folderPath", this.folderPath);
 	}
 	
 	/**
@@ -95,18 +106,16 @@ public class DeployVIVOWebServicesListener {
 	 */
 	public void execute() throws IOException {
 		try {
-			// creating a new soap server TODO:  rename ... please
-			SoapServer myServer = new SoapServer();
-			
+			// creating a new soap server
+			SoapServer vivoSoapServer = new SoapServer();
 			
 			//TODO clean me (messy hard to read etc)
-		    if (myServer.initService(this.soapConfigPath)) {
-		    	myServer.deployRpcSoapService(org.vivoweb.harvester.soap.VIVOWebServicesListener.class,this.serviceName);
-				//myServer.deployRpcSoapService(org.jSoapServer.WebServicesListener.class, "PeopleListener");
-      			myServer.startServer();
-				QSAdminServerConfig adminConfig = myServer.getConfig().getQSAdminServerConfig();
+		    if (vivoSoapServer.initService(this.soapConfigPath)) {
+		    	vivoSoapServer.deployRpcSoapService(org.vivoweb.harvester.soap.VIVOWebServicesListener.class,this.serviceName);
+      			vivoSoapServer.startServer();
+				QSAdminServerConfig adminConfig = vivoSoapServer.getConfig().getQSAdminServerConfig();
 				if (adminConfig != null) {
-					myServer.startQSAdminServer();
+					vivoSoapServer.startQSAdminServer();
 				}
 		    }
 		} catch (Exception e) {

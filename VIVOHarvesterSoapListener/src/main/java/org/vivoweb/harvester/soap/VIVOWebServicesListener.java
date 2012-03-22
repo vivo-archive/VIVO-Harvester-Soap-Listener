@@ -73,8 +73,8 @@ public class VIVOWebServicesListener {
 		// Use above time to generate Uniqueu filename for received messages
 		filename = this.folderPath + "/" + filename;
 
-		String returnvalue = "NULLVALUE";
-		String soapbody = null;
+		String returnValue = "NULLVALUE";
+		String soapBody = null;
 
 		// SOAPMessageContext provides access to the SOAP message for either
 		// request or response.
@@ -84,43 +84,43 @@ public class VIVOWebServicesListener {
 		try {
 
 			// get the soap body from the Soap message as String
-			soapbody = msgContext.getRequestMessage().getSOAPPartAsString();
+			soapBody = msgContext.getRequestMessage().getSOAPPartAsString();
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
 			// Build the DOM document from the Soap body, so that we can extract
 			// a specific reuired section of DOM using SAX parser
-			Document doc = dBuilder.parse(new ByteArrayInputStream(soapbody.getBytes()));
+			Document doc = dBuilder.parse(new ByteArrayInputStream(soapBody.getBytes()));
 
 			// Get the text content of Soap body payload. This will be actual received message
 			// TODO: Explain why item(0) and not all child nodes
-			String wellformatstring = doc.getChildNodes().item(0).getTextContent();
+			String wellFormattedString = doc.getChildNodes().item(0).getTextContent();
 
 			// trimming whitespace and placing the \n between every > < so that it will be human readable
-			wellformatstring = wellformatstring.trim();
-			wellformatstring = wellformatstring.replaceAll("> * <", ">\n<");
+			wellFormattedString = wellFormattedString.trim();
+			wellFormattedString = wellFormattedString.replaceAll("> * <", ">\n<");
 
 			// format String to an inputstream to be read by sax
-			InputStream in = new ByteArrayInputStream(wellformatstring.getBytes());
+			InputStream in = new ByteArrayInputStream(wellFormattedString.getBytes());
 
 			// Validate to see if Received message is as per specified XSD
 			if (validateXML(in)) {
 
 				// Write the OutPUT file
 				BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-				out.write(wellformatstring);
+				out.write(wellFormattedString);
 				out.close();
 				
-				returnvalue = "ok";				//TODO:  Is this the proper format?  Should probably format in such a way that if a bad write out occurs it doesn't send sucess
+				returnValue = "ok";				//TODO:  Is this the proper format?  Should probably format in such a way that if a bad write out occurs it doesn't send sucess
 			} else {// if the format is BAD
-				returnvalue = "BAD Format";		//TODO:  Is this the proper return message, is there a standard format
+				returnValue = "BAD Format";		//TODO:  Is this the proper return message, is there a standard format
 			}
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		return returnvalue;
+		return returnValue;
 
 	}
 
