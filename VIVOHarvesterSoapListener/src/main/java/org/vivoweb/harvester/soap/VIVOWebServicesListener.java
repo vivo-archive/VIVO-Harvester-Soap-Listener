@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -85,6 +86,7 @@ public class VIVOWebServicesListener {
 
 			// get the soap body from the Soap message as String
 			soapBody = msgContext.getRequestMessage().getSOAPPartAsString();
+			soapBody= URLDecoder.decode(soapBody,"UTF-8");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
