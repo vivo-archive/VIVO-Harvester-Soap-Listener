@@ -108,11 +108,15 @@ public class VIVOWebServicesListener {
 			// Validate to see if Received message is as per specified XSD
 			if (validateXML(in)) {
 
-				// Write the OutPUT file
-				BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-				out.write(wellFormattedString);
-				out.close();
-				
+				try {
+					// Write the OutPUT file
+					BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+					out.write(wellFormattedString);
+					out.close();
+				} catch ( Exception e) {
+					// Something happened during the write so we are going to send an exception
+					throw new SOAPException("Data was not able to be saved!");
+				}
 				returnValue = "ok";				//TODO:  Is this the proper format?  Should probably format in such a way that if a bad write out occurs it doesn't send sucess
 			} else {// if the format is BAD
 					//TODO:  Is this the proper return message, is there a standard format
