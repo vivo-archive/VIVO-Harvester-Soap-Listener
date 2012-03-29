@@ -115,7 +115,8 @@ public class VIVOWebServicesListener {
 				
 				returnValue = "ok";				//TODO:  Is this the proper format?  Should probably format in such a way that if a bad write out occurs it doesn't send sucess
 			} else {// if the format is BAD
-				returnValue = "BAD Format";		//TODO:  Is this the proper return message, is there a standard format
+					//TODO:  Is this the proper return message, is there a standard format
+					throw new SOAPException("Data did not validate against schema!");
 			}
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
