@@ -1,0 +1,9 @@
+#!/bin/sh
+MIN_MEM=256m
+MAX_MEM=512m
+HARVESTER_JAVA_OPTS="-server -d64 -XX:+UseConcMarkSweepGC -XX:+DisableExplicitGC -XX:+UseAdaptiveGCBoundary -XX:MaxGCPauseMillis=500 -XX:-UseGCOverheadLimit -XX:SurvivorRatio=16 -Xnoclassgc -XX:UseSSE=3 -XX:ParallelGCThreads=3"
+OPTS="-Xms$MIN_MEM -Xmx$MAX_MEM $HARVESTER_JAVA_OPTS"
+VWSConfig="/data/vivo/web_service/VIVOHarvester.xml"
+
+cd $(dirname $0)/../
+exec java $OPTS -jar /data/vivo/web_service/VIVOHarvesterWebServices.jar -X $VWSConfig
