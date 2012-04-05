@@ -86,7 +86,7 @@ public class VIVOWebServicesListener {
 
 			// get the soap body from the Soap message as String
 			soapBody = msgContext.getRequestMessage().getSOAPPartAsString();
-			soapBody= URLDecoder.decode(soapBody,"UTF-8");
+			//soapBody= URLDecoder.decode(soapBody,"UTF-8");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
@@ -97,30 +97,28 @@ public class VIVOWebServicesListener {
 			// Get the text content of Soap body payload. This will be actual received message
 			// TODO: Explain why item(0) and not all child nodes
 			String wellFormattedString = doc.getChildNodes().item(0).getTextContent();
+			String copystring = doc.getChildNodes().item(0).getTextContent();
 
 			// trimming whitespace and placing the \n between every > < so that it will be human readable
+			
+			wellFormattedString= URLDecoder.decode(wellFormattedString,"UTF-8");
 			wellFormattedString = wellFormattedString.trim();
-			wellFormattedString = wellFormattedString.replaceAll("> * <", ">\n<");
-
+			wellFormattedString = wellFormattedString.replaceAll("><", ">\n<");
+			System.out.println(wellFormattedString);
 			// format String to an inputstream to be read by sax
-			InputStream in = new ByteArrayInputStream(wellFormattedString.getBytes());
+			InputStream in = new ByteArrayInputStream(copystring.getBytes());
 
 			// Validate to see if Received message is as per specified XSD
 			if (validateXML(in)) {
 
-				try {
-					// Write the OutPUT file
-					BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-					out.write(wellFormattedString);
-					out.close();
-				} catch ( Exception e) {
-					// Something happened during the write so we are going to send an exception
-					throw new SOAPException("Data was not able to be saved!");
-				}
+				// Write the OutPUT file
+				BufferedWriter out = new BufferedWriter(new FileWriter(filename));
+				out.write(wellFormattedString);
+				out.close();
+				
 				returnValue = "ok";				//TODO:  Is this the proper format?  Should probably format in such a way that if a bad write out occurs it doesn't send sucess
 			} else {// if the format is BAD
-					//TODO:  Is this the proper return message, is there a standard format
-					throw new SOAPException("Data did not validate against schema!");
+				returnValue = "BAD Format";		//TODO:  Is this the proper return message, is there a standard format
 			}
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
