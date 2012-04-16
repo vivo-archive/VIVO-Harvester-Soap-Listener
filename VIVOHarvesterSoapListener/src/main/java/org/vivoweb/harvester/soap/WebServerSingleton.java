@@ -26,11 +26,11 @@ public class WebServerSingleton {
 	
 
 		FileHandler txtLog = null;
-		File log = new File("./log/");
+		File log = new File("./logs/");
 		if (!log.canRead())
 			log.mkdir();
 		try {
-			txtLog = new FileHandler("log/Soap-bizz-talk%u%g.txt", 1024 * 1024, 20,
+			txtLog = new FileHandler("logs/Soap-bizz-talk%u%g.txt", 1024 * 1024, 20,
 					true);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
