@@ -139,16 +139,18 @@ public class VIVOWebServicesListener {
 						new FileWriter(filename));
 				out.write(wellFormattedString);
 				out.close();
+				String id=filename.split("/")[5];
 				logger.fine("Message Received : From " + clientaddress
-						+ " Message ID :" + filename);
-				returnValue = "ok"; // TODO: Is this the proper format? Should
+						+ " Message ID :" + id);
+				returnValue = "Message Received : From " + clientaddress
+						+ " Message ID :" + id; // TODO: Is this the proper format? Should
 									// probably format in such a way that if a
 									// bad write out occurs it doesn't send
-									// sucess
+									// success
 			} else {// if the format is BAD
 
 				logger.fine("Message Rejected : From " + clientaddress
-						+ " BAD Format");
+						+ " XML Message doest not match to specified  Person XSD schema");
 				returnValue = "BAD Format"; // TODO: Is this the proper return
 											// message, is there a standard
 											// format
