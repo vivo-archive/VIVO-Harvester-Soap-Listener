@@ -273,11 +273,11 @@
   		<dependency>
 			<groupId>org.jsoapserver</groupId>
 			<artifactId>jsoapserver</artifactId>
-			<version>0.3</version>
-			<type>jar</type>
+			<version>0.3.1</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/jsoapserver-0.3.jar</systemPath>
-		</dependency>
+			<systemPath>${basedir}/lib/jSoapServer-0.3.1.jar</systemPath>
+		</dependency>	
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

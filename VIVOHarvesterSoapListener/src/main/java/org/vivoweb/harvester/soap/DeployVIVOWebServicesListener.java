@@ -1,9 +1,9 @@
 package org.vivoweb.harvester.soap;
 
-import java.io.File;
+import java.io.File; 
 import java.io.IOException;
-
 import org.jSoapServer.SoapServer;
+import org.vivoweb.harvester.soap.VIVOWebServicesListener;
 import org.quickserver.util.xmlreader.QSAdminServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +74,7 @@ public class DeployVIVOWebServicesListener {
 		this.folderPath = folderPath;
 		this.soapConfigPath = soapConfigPath;
 		this.serviceName = serviceName;
+		System.out.println(serviceName);
 		this.schemaFile = schemaFile;
 		
 		// Create a file object to test the schemaFile with
@@ -108,6 +109,7 @@ public class DeployVIVOWebServicesListener {
 		try {
 			// creating a new soap server
 			SoapServer vivoSoapServer = new SoapServer();
+			
 			
 			//TODO clean me (messy hard to read etc)
 		    if (vivoSoapServer.initService(this.soapConfigPath)) {

@@ -84,7 +84,7 @@
 			<max-idle>50</max-idle>
 		</client-data-object-pool>
 	</object-pool>	
-	
+
 	<communication-logging>
 		<enable>true</enable>
 	</communication-logging>
@@ -115,4 +115,26 @@
 		  </ip-filter> 
 		</access-constraint> 
 	</qsadmin-server>
+	
+
+	<advanced-settings>
+		<charset>ISO-8859-1</charset>
+		<use-direct-byte-buffer>true</use-direct-byte-buffer>
+		<!--<byte-buffer-size>61440</byte-buffer-size>-->
+		<backlog>1024</backlog>		
+		<socket-linger>-1</socket-linger>
+		<debug-non-blocking-mode>false</debug-non-blocking-mode> 
+
+		<performance-preferences-connection-time>0</performance-preferences-connection-time>
+		<performance-preferences-latency>4</performance-preferences-latency>
+		<performance-preferences-bandwidth>0</performance-preferences-bandwidth>
+
+		<client-socket-tcp-no-delay>true</client-socket-tcp-no-delay>
+		<!-- 10 low latency -->
+		<client-socket-traffic-class>10</client-socket-traffic-class>
+		
+
+		<client-socket-receive-buffer-size>13107</client-socket-receive-buffer-size>
+		<client-socket-send-buffer-size>13107</client-socket-send-buffer-size>
+	</advanced-settings>
 </quickserver>
