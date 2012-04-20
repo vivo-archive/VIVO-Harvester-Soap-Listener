@@ -150,10 +150,9 @@ public class VIVOWebServicesListener {
 			} else {// if the format is BAD
 
 				logger.fine("Message Rejected : From " + clientaddress
-						+ " XML Message doest not match to specified  Person XSD schema");
-				returnValue = "BAD Format"; // TODO: Is this the proper return
-											// message, is there a standard
-											// format
+						+ " XML Message does not match to specified  Person XSD schema");
+				returnValue = "Message Rejected : From " + clientaddress
+						+ " XML Message doest not match to specified  Person XSD schema"; 
 			}
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
