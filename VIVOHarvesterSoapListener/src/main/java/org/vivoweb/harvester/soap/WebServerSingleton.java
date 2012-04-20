@@ -22,28 +22,7 @@ public class WebServerSingleton {
 
 	// No one else can create a Object .. since constructor is private
 	private WebServerSingleton() {
-		
 	
-
-		FileHandler txtLog = null;
-		File log = new File("./logs/");
-		if (!log.canRead())
-			log.mkdir();
-		try {
-			txtLog = new FileHandler("logs/Soap-bizz-talk%u%g.txt", 1024 * 1024, 20,
-					true);
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		txtLog.setFormatter(new SimpleTextFormatter());
-		txtLog.setLevel(Level.FINE);
-		logger.addHandler(txtLog);
-		logger.fine("From singleton");
 	}
 
 	public static WebServerSingleton getInstance() {

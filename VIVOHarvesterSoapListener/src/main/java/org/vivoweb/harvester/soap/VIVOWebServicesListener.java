@@ -38,20 +38,21 @@ import org.xml.sax.SAXException;
  */
 
 public class VIVOWebServicesListener {
-	private static Logger logger = Logger.getLogger(VIVOWebServicesListener.class
-			.getName());
+	private static Logger logger = Logger
+			.getLogger(VIVOWebServicesListener.class.getName());
 	String filename;
 
 	/**
 	 * folderPath that we will output our XML message
 	 */
-	private File folderPath;
-
+	private static File folderPath;
+	static FileHandler txtLog = null;
 	/**
 	 * schemaFile this is the schemaFile that we will use to validate the XML
 	 * message against
 	 */
-	private File schemaFile;
+	private static File schemaFile;
+	private static String logDir;
 
 	/**
 	 * Get Message is the webservice which will listen for SOAP XML messages
@@ -66,20 +67,41 @@ public class VIVOWebServicesListener {
 	 *             // This exception will be thrown if the received XML does not
 	 *             match with specified XSD
 	 */
+
+	static {
+		schemaFile = new File(
+				(String) WebServerSingleton.getProperty("schemaFile"));
+		folderPath = new File(
+				(String) WebServerSingleton.getProperty("folderPath"));
+		logDir = (String) WebServerSingleton.getProperty("logDir");
+
+		File log = new File(logDir);
+		if (!log.canRead())
+			log.mkdir();
+		try {
+			txtLog = new FileHandler(logDir + "Soap-bizz-talk%u%g.txt",
+					1024 * 1024, 20, true);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		txtLog.setFormatter(new SimpleTextFormatter());
+		txtLog.setLevel(Level.FINE);
+		logger.addHandler(txtLog);
+
+	}
+
 	public String getMessage(String p) throws SOAPException, SAXException,
 			IOException, ParserConfigurationException {
 
-
-		
 		// WebServerSingleton
 		// This is the Singleton Object to store and access the webserver config
 		// properties . This is based on the singleton pattern and a new Object
 		// will be created only when you restart the server
-
-		this.schemaFile = new File(
-				(String) WebServerSingleton.getProperty("schemaFile"));
-		this.folderPath = new File(
-				(String) WebServerSingleton.getProperty("folderPath"));
 
 		// Get number of milliseconds since January 1, 1970, 00:00:00 GMT
 		// represented by this Date object.
@@ -139,20 +161,23 @@ public class VIVOWebServicesListener {
 						new FileWriter(filename));
 				out.write(wellFormattedString);
 				out.close();
-				String id=filename.split("/")[5];
+				String id = filename.split("/")[5];
 				logger.fine("Message Received : From " + clientaddress
 						+ " Message ID :" + id);
 				returnValue = "Message Received : From " + clientaddress
-						+ " Message ID :" + id; // TODO: Is this the proper format? Should
-									// probably format in such a way that if a
-									// bad write out occurs it doesn't send
-									// success
+						+ " Message ID :" + id; // TODO: Is this the proper
+												// format? Should
+				// probably format in such a way that if a
+				// bad write out occurs it doesn't send
+				// success
 			} else {// if the format is BAD
 
-				logger.fine("Message Rejected : From " + clientaddress
+				logger.fine("Message Rejected : From "
+						+ clientaddress
 						+ " XML Message does not match to specified  Person XSD schema");
-				returnValue = "Message Rejected : From " + clientaddress
-						+ " XML Message doest not match to specified  Person XSD schema"; 
+				returnValue = "Message Rejected : From "
+						+ clientaddress
+						+ " XML Message doest not match to specified  Person XSD schema";
 			}
 		} catch (AxisFault e) {
 			// TODO Auto-generated catch block
