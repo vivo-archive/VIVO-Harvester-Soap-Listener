@@ -18,22 +18,20 @@ public class DeployVIVOWebServicesListener {
 	/**
 	 * SLF4J Logger
 	 */
-	private static Logger log = LoggerFactory
-			.getLogger(DeployVIVOWebServicesListener.class);
+	private static Logger log = LoggerFactory.getLogger(DeployVIVOWebServicesListener.class);
 
 	/**
 	 * This will hold the value of the type of encryption that will be used
 	 */
-
 	private String logDir;
+	
 	/**
 	 * This is the logdir for VivoWebservice log
 	 */
 	private String decryption;
 
 	/**
-	 * This will hold the folder path that incoming XML messages will be saved
-	 * into
+	 * This will hold the folder path that incoming XML messages will be saved into
 	 */
 	private String folderPath;
 
@@ -48,20 +46,16 @@ public class DeployVIVOWebServicesListener {
 	private String serviceName;
 
 	/**
-	 * This will hold the name of schema file that incoming XML messages will be
-	 * validated against
+	 * This will hold the name of schema file that incoming XML messages will be validated against
 	 */
 	private String schemaFile;
 
 	/**
 	 * Command line Constructor
 	 * 
-	 * @param args
-	 *            commandline arguments
-	 * @throws IOException
-	 *             error creating task
-	 * @throws UsageException
-	 *             user requested usage message
+	 * @param args commandline arguments
+	 * @throws IOException error creating task
+	 * @throws UsageException user requested usage message
 	 */
 	private DeployVIVOWebServicesListener(String[] args) throws IOException,
 			UsageException {
@@ -77,8 +71,9 @@ public class DeployVIVOWebServicesListener {
 	 *             error creating task
 	 */
 	private DeployVIVOWebServicesListener(ArgList args) throws IOException {
-		this(args.get("d"), args.get("o"), args.get("c"), args.get("s"), args
-				.get("x"), args.get("l"));
+		this(
+				args.get("d"), args.get("o"), args.get("c"), args.get("s"), args.get("x"), args.get("l"), args.has("n"), args.get("p")
+		);
 	}
 
 	/**
@@ -86,7 +81,7 @@ public class DeployVIVOWebServicesListener {
 	 */
 	public DeployVIVOWebServicesListener(String decryption, String folderPath,
 			String soapConfigPath, String serviceName, String schemaFile,
-			String logDir) {
+			String logDir, boolean bSpecificNaming, String namingExpression) {
 
 		this.decryption = decryption;
 		this.folderPath = folderPath;
@@ -99,12 +94,10 @@ public class DeployVIVOWebServicesListener {
 		// Create a file object to test the schemaFile with
 		File testSchema = new File(this.schemaFile);
 
-		// Check to see if the schemaFile a) is a file, b) can be read, and c)
-		// exists
+		// Check to see if the schemaFile a) is a file, b) can be read, and c) exists
 		if (!testSchema.isFile() || !testSchema.canRead()
 				|| !testSchema.exists()) {
-			// The schemaFile is not ready for us, so we need to throw an
-			// exception
+			// The schemaFile is not ready for us, so we need to throw an exception
 			throw new IllegalArgumentException(
 					"Schema file is either not a file, does not exist, or cannot be read from!");
 		}
@@ -112,29 +105,39 @@ public class DeployVIVOWebServicesListener {
 		// Create a file object to test the output folderPath with
 		File testFolderPath = new File(this.folderPath);
 
-		// Check to see if the output folderPath a) is a directory, b) can be
-		// written, and c) exists
+		// Check to see if the output folderPath a) is a directory, b) can be written, and c) exists
 		if (!testFolderPath.isDirectory() || !testFolderPath.canWrite()
 				|| !testFolderPath.exists()) {
-			// The output folderPath is not ready for us, so we need to throw an
-			// exception
+			// The output folderPath is not ready for us, so we need to throw an exception
 			throw new IllegalArgumentException(
 					"Output folder path is either not a directory, does not exist, or cannot be written to!");
 		}
 
 		WebServerSingleton.getInstance();
-		// In this state, no one will now until someone calls the service to
-		// pass information
+		// In this state, no one will now until someone calls the service to pass information
 		WebServerSingleton.setProperty("schemaFile", this.schemaFile);
 		WebServerSingleton.setProperty("folderPath", this.folderPath);
 		WebServerSingleton.setProperty("logDir", this.logDir);
+		
+		if(bSpecificNaming)
+		{
+			WebServerSingleton.setProperty("bSpecificNaming", "true");
+		
+			if (namingExpression != null)
+			{
+				WebServerSingleton.setProperty("namingExpression", namingExpression);
+			}
+			else
+			{
+				WebServerSingleton.setProperty("namingExpression", "UFID");
+			}
+		}
 	}
 
 	/**
 	 * Executes the task
 	 * 
-	 * @throws IOException
-	 *             error processing record handler
+	 * @throws IOException error processing record handler
 	 */
 	public void execute() throws IOException {
 		try {
@@ -201,6 +204,15 @@ public class DeployVIVOWebServicesListener {
 				.setLongOpt("logdir").withParameter(true, "LOG-DIR")
 				.setDescription("This is the location of vivowebservice log")
 				.setRequired(true));
+		parser.addArgument(new ArgDef().setShortOption('n')
+				.setLongOpt("specificNaming")
+				.setDescription("Use record-specific message names instead of timestamps.")
+				.setRequired(false));
+		parser..addArgument(new ArgDef().setShortOption('p')
+				.setLongOpt("namingExpression")
+				.withParameter(true, "PROPERTY_EXPRESSION")
+				.setDescription("Property to select for specificNaming, defaults to UFID if undefined.")
+				.setRequired(false));
 		return parser;
 	}
 

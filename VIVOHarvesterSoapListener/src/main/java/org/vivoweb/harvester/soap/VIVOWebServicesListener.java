@@ -26,6 +26,7 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
 import org.jSoapServer.SoapHandler;
 import org.quickserver.util.logging.SimpleTextFormatter;
+import org.vivoweb.harvester.util.XPathTool;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -53,6 +54,8 @@ public class VIVOWebServicesListener {
 	 */
 	private static File schemaFile;
 	private static String logDir;
+	private static boolean bSpecificNaming;
+	private static String namingExpression;
 
 	/**
 	 * Get Message is the webservice which will listen for SOAP XML messages
@@ -92,6 +95,9 @@ public class VIVOWebServicesListener {
 		txtLog.setFormatter(new SimpleTextFormatter());
 		txtLog.setLevel(Level.FINE);
 		logger.addHandler(txtLog);
+		
+		bSpecificNaming = (WebServerSingleton.getProperty("bSpecificNaming") != null) ? true : false;
+		namingExpression = WebServerSingleton.getProperty("namingExpression"); 
 
 	}
 
@@ -102,13 +108,6 @@ public class VIVOWebServicesListener {
 		// This is the Singleton Object to store and access the webserver config
 		// properties . This is based on the singleton pattern and a new Object
 		// will be created only when you restart the server
-
-		// Get number of milliseconds since January 1, 1970, 00:00:00 GMT
-		// represented by this Date object.
-		String filename = new Long(new Date().getTime()).toString();
-
-		// Use above time to generate Uniqueu filename for received messages
-		filename = this.folderPath + "/" + filename;
 
 		String returnValue = "NULLVALUE";
 		String soapBody = null;
@@ -156,6 +155,22 @@ public class VIVOWebServicesListener {
 			// Validate to see if Received message is as per specified XSD
 			if (validateXML(in)) {
 
+				String filename;
+				
+				if (!bSpecificNaming)
+				{
+					// Get number of milliseconds since January 1, 1970, 00:00:00 GMT
+					// represented by this Date object.
+					filename = new Long(new Date().getTime()).toString();
+				}
+				else
+				{
+					filename = XPathTool.getXpathStreamResult(in, namingExpression);
+				}
+				
+				// Use above time to generate Unique filename for received messages
+				filename = this.folderPath + "/" + filename;
+				
 				// Write the OutPUT file
 				BufferedWriter out = new BufferedWriter(
 						new FileWriter(filename));
