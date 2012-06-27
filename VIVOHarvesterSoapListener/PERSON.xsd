@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema xmlns:b="http://schemas.microsoft.com/BizTalk/2003" xmlns="http://uf.biztalk.shibperson" targetNamespace="http://uf.biztalk.shibperson" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="PERSON">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="1" name="UFID" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="GLID" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="UFID2" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <b:fieldInfo notes="Only used for FIXUFID transactions" />
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="GLID2" type="xs:string">
+          <xs:annotation>
+            <xs:appinfo>
+              <b:fieldInfo notes="Only used for FIXUFID transactions" />
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="ACTIVE" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="PROTECT" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="AFFILIATION" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="NAME">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="type">
+                  <xs:annotation>
+                    <xs:appinfo>
+                      <b:fieldInfo notes="Name Types: 21 (Display), 33 (Business), 35 (First), 36 (Last), 37 (Middle), 39 (Suffix), 232 (Directory), 40 (Prefix)" />
+                    </xs:appinfo>
+                  </xs:annotation>
+                  <xs:simpleType>
+                    <xs:restriction base="xs:integer" />
+                  </xs:simpleType>
+                </xs:attribute>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="ADDRESS">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ADDRESS1" type="xs:string" />
+              <xs:element name="ADDRESS2" type="xs:string" />
+              <xs:element name="ADDRESS3" type="xs:string" />
+              <xs:element name="CITY" type="xs:string" />
+              <xs:element name="STATE" type="xs:string" />
+              <xs:element name="ZIP" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="PHONE">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="type">
+                  <xs:annotation>
+                    <xs:appinfo>
+                      <b:fieldInfo notes="Phone Types: 10 (Phone), 11 (Fax)" />
+                    </xs:appinfo>
+                  </xs:annotation>
+                  <xs:simpleType>
+                    <xs:restriction base="xs:integer" />
+                  </xs:simpleType>
+                </xs:attribute>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="EMAIL">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute name="type">
+                  <xs:annotation>
+                    <xs:appinfo>
+                      <b:fieldInfo notes="Email Types: 1 (UF), 90 (Personal)" />
+                    </xs:appinfo>
+                  </xs:annotation>
+                  <xs:simpleType>
+                    <xs:restriction base="xs:integer" />
+                  </xs:simpleType>
+                </xs:attribute>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="DEPTID" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="RELATIONSHIP">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DEPTID" type="xs:string" />
+              <xs:element name="DEPTNAME" type="xs:string" />
+            </xs:sequence>
+            <xs:attribute name="type">
+              <xs:simpleType>
+                <xs:restriction base="xs:integer" />
+              </xs:simpleType>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" maxOccurs="1" name="WORKINGTITLE" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="DECEASED" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="LOA" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="ACTION" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

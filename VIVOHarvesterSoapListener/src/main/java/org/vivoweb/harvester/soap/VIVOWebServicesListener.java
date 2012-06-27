@@ -151,6 +151,9 @@ public class VIVOWebServicesListener {
 			System.out.println(wellFormattedString);
 			// format String to an inputstream to be read by sax
 			InputStream in = new ByteArrayInputStream(copystring.getBytes());
+			
+			// We need another input stream as using 'in' once to validate brings the stream to EOF. -RPZ
+			InputStream in2 =  new ByteArrayInputStream(copystring.getBytes());
 
 			// Validate to see if Received message is as per specified XSD
 			if (validateXML(in)) {
@@ -165,7 +168,7 @@ public class VIVOWebServicesListener {
 				}
 				else
 				{
-					filename = XPathTool.getXpathStreamResult(in, namingExpression);
+					filename = XPathTool.getXpathStreamResult(in2, namingExpression);
 				}
 				
 				// Use above time to generate Unique filename for received messages
@@ -201,6 +204,69 @@ public class VIVOWebServicesListener {
 
 		return returnValue;
 
+	}
+	
+	// Used by the JUnit test, this function is the same functionality as getMessage, but without
+	// a webservice context: Tests the sax processing of the input XML into harvestable files.
+
+	public String messageTest(String p) throws IOException, ParserConfigurationException {
+
+		String returnValue = "NULLVALUE";
+		
+		try {
+	
+			String wellFormattedString = p;
+			String copystring = p;
+			String copystring2 = p;
+			// trimming whitespace and placing the \n between every > < so that
+			// it will be human readable
+		
+			wellFormattedString = URLDecoder.decode(wellFormattedString, "UTF-8");
+			wellFormattedString = wellFormattedString.trim();
+			wellFormattedString = wellFormattedString.replaceAll("><", ">\n<");
+			System.out.println(wellFormattedString);
+			// format String to an inputstream to be read by sax
+			InputStream in = new ByteArrayInputStream(copystring.getBytes());
+			
+			// We need another input stream as using 'in' once to validate brings the stream to EOF. -RPZ
+			InputStream in2 =  new ByteArrayInputStream(copystring2.getBytes());
+		
+			// Validate to see if Received message is as per specified XSD
+			if (validateXML(in)) {
+		
+				String filename;
+				
+				if (!bSpecificNaming)
+				{
+					// Get number of milliseconds since January 1, 1970, 00:00:00 GMT
+					// represented by this Date object.
+					filename = new Long(new Date().getTime()).toString();
+				}
+				else
+				{
+					filename = XPathTool.getXpathStreamResult(in2, namingExpression);
+					System.out.println("Naming Expression: " + namingExpression);
+					System.out.println("File Name: " + filename);
+				}
+				
+				// Use above time to generate Unique filename for received messages
+				filename = folderPath + "/" + filename;
+	
+				System.out.println("File Name: " + filename);
+				
+				// Write the OutPUT file
+				BufferedWriter out = new BufferedWriter(
+						new FileWriter(filename));
+				out.write(wellFormattedString);
+				out.close();
+				
+			} 
+		} catch (Exception e) {
+			// Ignore.
+		}
+		
+		return returnValue;
+		
 	}
 
 	protected boolean validateXML(InputStream in) throws SAXException {

@@ -129,7 +129,7 @@ public class DeployVIVOWebServicesListener {
 			}
 			else
 			{
-				WebServerSingleton.setProperty("namingExpression", "UFID");
+				WebServerSingleton.setProperty("namingExpression", "//UFID");
 			}
 		}
 	}
@@ -165,7 +165,7 @@ public class DeployVIVOWebServicesListener {
 	}
 
 	/**
-	 * Get the ArgParserfdgdgfdgfd for this task
+	 * Get the ArgParser for this task
 	 * 
 	 * @return the ArgParser
 	 */
@@ -208,10 +208,10 @@ public class DeployVIVOWebServicesListener {
 				.setLongOpt("specificNaming")
 				.setDescription("Use record-specific message names instead of timestamps.")
 				.setRequired(false));
-		parser..addArgument(new ArgDef().setShortOption('p')
+		parser.addArgument(new ArgDef().setShortOption('p')
 				.setLongOpt("namingExpression")
 				.withParameter(true, "PROPERTY_EXPRESSION")
-				.setDescription("Property to select for specificNaming, defaults to UFID if undefined.")
+				.setDescription("Property to select for specificNaming, defaults to //UFID if undefined.")
 				.setRequired(false));
 		return parser;
 	}
@@ -219,8 +219,7 @@ public class DeployVIVOWebServicesListener {
 	/**
 	 * Main method
 	 * 
-	 * @param args
-	 *            commandline arguments
+	 * @param args commandline arguments
 	 */
 	public static void main(String... args) {
 		Exception error = null;
